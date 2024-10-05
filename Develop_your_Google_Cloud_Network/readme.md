@@ -5,9 +5,12 @@
 3. Deployed WordPress using a Kubernetes cluster in dev-vpc, connected to a Google Cloud SQL instance for the backend database.
 4. Utilized a Kubernetes LoadBalancer service to expose the WordPress application to external users.
 5. Set uptime checks to monitor if anything goes wrong.
-6. Given access to other engineer to do modification using IAM 
+6. Given access to other engineer to do modification using IAM
+   
+![Image](https://github.com/omnarayansharma777/Google-Cloud-Project/blob/main/Develop_your_Google_Cloud_Network/img.png)
 
 # Task 1. Create development VPC
+Created a dev-vpc name **griffin-dev-vpc** with 2 subnets **griffin-dev-wp** and **griffin-dev-mgmt**.
 
 ```
 gcloud compute networks create griffin-dev-vpc --subnet-mode custom
@@ -16,7 +19,7 @@ gcloud compute networks subnets create griffin-dev-mgmt --range=192.168.32.0/20 
 ```
 
 # Task 2. Create production VPC
-
+Created a prod-vpc name **griffin-prod-vpc** with 2 subnets **griffin-prod-wp** and **griffin-prod-mgmt**.
 ```
 gcloud compute networks create griffin-prod-vpc --subnet-mode=custom
 gcloud compute networks subnets create griffin-prod-wp --range=192.168.48.0/20 --network=griffin-prod-vpc --region=us-central1
@@ -24,7 +27,7 @@ gcloud compute networks subnets create griffin-prod-mgmt --range=192.168.64.0/20
 ```
 
 # Task 3. Create bastion host
-
+created bastion host to connect  network and created firewall rule. 
 ```
 gcloud compute instances create bastion --network-interface=network=griffin-dev-vpc,subnet=griffin-dev-mgmt  --network-interface=network=griffin-prod-vpc,subnet=griffin-prod-mgmt --tags=ssh --zone=$ZONE
 gcloud compute firewall-rules create ssh-dev --network=griffin-dev-vpc --rules=tcp:22 --source-ranges=0.0.0.0/0 --target-tags=ssh --action=ALLOW
@@ -32,6 +35,7 @@ gcloud compute firewall-rules create ssh-prod --network=griffin-prod-vpc --rules
 ```
 
 # Task 4. Create and configure Cloud SQL Instance
+First created MySQL instance then a user wp_user so wordpress can interact to sql server 
 ```
 gcloud sql instances create griffin-dev-db --database-version=MYSQL_5_7 --region=$REGION --root-password='omdev'
 gcloud sql databases create wordpress --instance=griffin-dev-db
@@ -40,6 +44,7 @@ gcloud sql users create wp_user --instance=griffin-dev-db --password=stormwind_r
 ```
 # Task 5. Create Kubernetes cluster
 ```
+
 gcloud container clusters create griffin-dev --network griffin-dev-vpc --subnetwork griffin-dev-wp --machine-type e2-standard-4 --num-nodes=2 --zone=$ZONE
 ```
 # Task 6. Prepare the Kubernetes cluster 
