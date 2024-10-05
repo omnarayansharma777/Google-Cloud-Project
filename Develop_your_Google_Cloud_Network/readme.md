@@ -4,7 +4,7 @@
 2. Configured a bastion host with dual network interfaces: one connected to dev-vpc and the other to prod-vpc.
 3. Deployed WordPress using a Kubernetes cluster in dev-vpc, connected to a Google Cloud SQL instance for the backend database.
 4. Utilized a Kubernetes LoadBalancer service to expose the WordPress application to external users.
-5. Set uptime checks to moniter if anything goes wrong.
+5. Set uptime checks to monitor if anything goes wrong.
 6. Given access to other engineer to do modification using IAM 
 
 # Task 1. Create development VPC
