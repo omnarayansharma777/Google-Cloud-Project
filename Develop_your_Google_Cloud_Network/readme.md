@@ -1,10 +1,11 @@
+**Project Description**: This project involved setting up a secure and scalable infrastructure for deploying a WordPress application on Google Kubernetes Engine (GKE), ensuring isolation between development and production environments through the use of separate VPCs and a bastion host for secure access.
 
-
-
-
-
-
-
+1. Created two isolated VPCs: dev-vpc for development/testing and prod-vpc for live production.
+2. Configured a bastion host with dual network interfaces: one connected to dev-vpc and the other to prod-vpc.
+3. Deployed WordPress using a Kubernetes cluster in dev-vpc, connected to a Google Cloud SQL instance for the backend database.
+4. Utilized a Kubernetes LoadBalancer service to expose the WordPress application to external users.
+5. Set uptime checks to moniter if anything goes wrong.
+6. Given access to other engineer to do modification using IAM 
 
 # Task 1. Create development VPC
 
@@ -33,20 +34,23 @@ gcloud compute firewall-rules create ssh-prod --network=griffin-prod-vpc --rules
 # Task 4. Create and configure Cloud SQL Instance
 ```
 gcloud sql instances create griffin-dev-db --database-version=MYSQL_5_7 --region=$REGION --root-password='omdev'
+gcloud sql databases create wordpress --instance=griffin-dev-db
 gcloud sql users create wp_user --password=stormwind_rules --instance=griffin-dev-db
 gcloud sql users create wp_user --instance=griffin-dev-db --password=stormwind_rules --instance=griffin-dev-db
 ```
 # Task 5. Create Kubernetes cluster
 ```
-gcloud container clusters create griffin-dev --network griffin-dev-vpc --subnetwork griffin-dev-wp --machine-type e2-standard-4 --num-nodes=2 --zone us-central1-c
+gcloud container clusters create griffin-dev --network griffin-dev-vpc --subnetwork griffin-dev-wp --machine-type e2-standard-4 --num-nodes=2 --zone=$ZONE
 ```
-# Task 6. Prepare the Kubernetes cluster
+# Task 6. Prepare the Kubernetes cluster 
 ```
 gsutil cp -r gs://cloud-training/gsp321/wp-k8s .
+gcloud container clusters get-credentials griffin-dev --zone $ZONE
 gcloud iam service-accounts keys create key.json \
     --iam-account=cloud-sql-proxy@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com
 kubectl create secret generic cloudsql-instance-credentials \
     --from-file key.json
+kubectl create -f wp-env.yaml
 ```
 update  usename and password in wp-env.yaml
 
