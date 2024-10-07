@@ -94,29 +94,20 @@ The query needs to return the list of dates, the confirmed cases on that day, th
 Use the following names for the returned fields: Date, Confirmed_Cases_On_Day, Confirmed_Cases_Previous_Day and Percentage_Increase_In_Cases.  
 ```
 WITH us_cases_by_date AS (
-  SELECT
-    date,
-    SUM(cumulative_confirmed) AS Confirmed_Cases_On_Day
-  FROM
-    `bigquery-public-data.covid19_open_data.covid19_open_data`
-  WHERE
-    country_code="US"
-    AND date between '2020-03-22' and '2020-04-20'
-  GROUP BY
-    date
-  ORDER BY
-    date ASC
- )
-, us_previous_day_comparison AS
-(SELECT
-  Date,
-  Confirmed_Cases_On_Day,
-  LAG(Confirmed_Cases_On_Day) OVER(ORDER BY date) AS Confirmed_Cases_Previous_Day,
-  ((Confirmed_Cases_On_Day -  LAG(Confirmed_Cases_On_Day) OVER(ORDER BY date))/(LAG(Confirmed_Cases_On_Day) OVER(ORDER BY date)))*100 AS Percentage_Increase_In_Cases
-FROM us_cases_by_date
+    SELECT date, SUM(cumulative_confirmed) AS cases
+    FROM `bigquery-public-data.covid19_open_data.covid19_open_data`
+    WHERE country_name='United States of America' AND date BETWEEN '2020-03-22' AND '2020-04-20'
+    GROUP BY date
+    ORDER BY date ASC
+), us_previous_day_comparison AS (
+    SELECT date, cases, LAG(cases) OVER(ORDER BY date) AS previous_day,
+           cases - LAG(cases) OVER(ORDER BY date) AS net_new_cases,
+           (cases - LAG(cases) OVER(ORDER BY date))*100/LAG(cases) OVER(ORDER BY date) AS percentage_increase
+    FROM us_cases_by_date
 )
-select *  from us_previous_day_comparison
-where  Percentage_Increase_In_Cases>20 ;
+SELECT Date, cases AS Confirmed_Cases_On_Day, previous_day AS Confirmed_Cases_Previous_Day, percentage_increase AS Percentage_Increase_In_Cases
+FROM us_previous_day_comparison
+WHERE percentage_increase >20;
 ```
 
 # Task 8. Recovery rate
@@ -188,5 +179,6 @@ Date range : 2020-03-30 to 2020-04-19
 select date,sum(cumulative_confirmed) as country_cases,sum(cumulative_deceased) as country_deaths
 from `bigquery-public-data.covid19_open_data.covid19_open_data`
 where country_code='US' and date between '2020-03-30' and '2020-04-19'
-group by date;
+group by date
+ORDER BY date;
 ```
