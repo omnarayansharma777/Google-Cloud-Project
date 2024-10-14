@@ -2,6 +2,7 @@
 
 In this project, I worked as both a Data Sharing Partner and a Customer, setting up a data-sharing mechanism between two organizations. My primary objective was to create authorized views, assign specific user permissions and update customer data.
 
+U can find [Lab Link](https://www.cloudskillsboost.google/course_templates/657/labs/462733) and my skill badge [Here](https://www.credly.com/badges/d9b2897f-9078-4b4d-9655-85334f54dc42) .
 
 ![Loading](https://github.com/omnarayansharma777/Google-Cloud-Project/blob/main/Share_Data_using_Google_Data_Cloud/J7qOIElm12DamovB4BG42nuSgyeRAG02XA_EnFKPc6o%3D.png)
 
